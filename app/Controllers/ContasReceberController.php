@@ -212,6 +212,7 @@ class ContasReceberController extends Controller
             ];
 
             $contas = $this->model->findByUsuarioId($usuarioId, $filtros);
+            $resumo = $this->model->getResumo($usuarioId);
 
             View::render('contas_receber/index', [
                 '_layout'    => 'erp',
@@ -222,6 +223,7 @@ class ContasReceberController extends Controller
                 ],
                 'contas'  => $contas,
                 'filtros' => $filtros,
+                'resumo'  => $resumo,
             ]);
         } catch (\Throwable $e) {
             $this->logger->error('Erro ao listar contas a receber: ' . $e->getMessage());
