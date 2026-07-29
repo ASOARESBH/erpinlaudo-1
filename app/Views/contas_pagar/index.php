@@ -14,7 +14,50 @@ if (Auth::can('create_contas_pagar')) {
 }
 
 UI::sectionHeader('Contas a Pagar', 'Gerencie suas contas e vencimentos', $actions);
+
+$fmtValor = fn($v) => number_format((float)$v, 2, ',', '.');
 ?>
+
+<style>
+.cp-kpi-card{border-radius:12px;padding:18px 22px;display:flex;align-items:center;gap:16px;background:#fff;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.cp-kpi-icon{width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.cp-kpi-val{font-size:1.375rem;font-weight:700;line-height:1.2}
+.cp-kpi-lbl{font-size:.75rem;color:#6b7280;margin-top:2px}
+.cp-kpi-sub{font-size:.7rem;color:#94a3b8;margin-top:2px}
+</style>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-4">
+        <div class="cp-kpi-card">
+            <div class="cp-kpi-icon" style="background:#dbeafe;"><i class="fas fa-file-invoice-dollar" style="color:#1e40af;"></i></div>
+            <div>
+                <div class="cp-kpi-val" style="color:#1e40af;">R$ <?php echo $fmtValor($resumo->aberto_valor ?? 0); ?></div>
+                <div class="cp-kpi-lbl">Em Aberto</div>
+                <div class="cp-kpi-sub"><?php echo (int)($resumo->aberto_qtd ?? 0); ?> conta(s)</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4">
+        <div class="cp-kpi-card">
+            <div class="cp-kpi-icon" style="background:#fef3c7;"><i class="fas fa-calendar-alt" style="color:#92400e;"></i></div>
+            <div>
+                <div class="cp-kpi-val" style="color:#92400e;">R$ <?php echo $fmtValor($resumo->previsto_mes_valor ?? 0); ?></div>
+                <div class="cp-kpi-lbl">Previsto para Este Mês</div>
+                <div class="cp-kpi-sub"><?php echo (int)($resumo->previsto_mes_qtd ?? 0); ?> conta(s)</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4">
+        <div class="cp-kpi-card">
+            <div class="cp-kpi-icon" style="background:#fee2e2;"><i class="fas fa-exclamation-triangle" style="color:#991b1b;"></i></div>
+            <div>
+                <div class="cp-kpi-val" style="color:#991b1b;">R$ <?php echo $fmtValor($resumo->atraso_valor ?? 0); ?></div>
+                <div class="cp-kpi-lbl">Em Atraso</div>
+                <div class="cp-kpi-sub"><?php echo (int)($resumo->atraso_qtd ?? 0); ?> conta(s)</div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="card border-0 shadow-sm mb-4">
     <div class="card-body p-4">

@@ -40,6 +40,7 @@ class ContasPagarController extends Controller
             ];
 
             $contas = $this->model->findByUsuarioId($usuarioId, $filtros);
+            $resumo = $this->model->getResumo($usuarioId);
 
             View::render('contas_pagar/index', [
                 '_layout' => 'erp',
@@ -50,6 +51,7 @@ class ContasPagarController extends Controller
                 ],
                 'contas' => $contas,
                 'filtros' => $filtros,
+                'resumo' => $resumo,
             ]);
         } catch (\Exception $e) {
             $this->logger->error('Erro ao listar contas a pagar: ' . $e->getMessage());

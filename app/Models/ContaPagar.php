@@ -51,6 +51,32 @@ class ContaPagar extends Model
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
 
+    public function getResumo(int $usuarioId): object
+    {
+        $sql = "SELECT
+                    COUNT(*) AS aberto_qtd,
+                    COALESCE(SUM(valor), 0) AS aberto_valor,
+                    COALESCE(SUM(CASE WHEN MONTH(data_vencimento) = MONTH(CURDATE()) AND YEAR(data_vencimento) = YEAR(CURDATE()) THEN 1 ELSE 0 END), 0) AS previsto_mes_qtd,
+                    COALESCE(SUM(CASE WHEN MONTH(data_vencimento) = MONTH(CURDATE()) AND YEAR(data_vencimento) = YEAR(CURDATE()) THEN valor ELSE 0 END), 0) AS previsto_mes_valor,
+                    COALESCE(SUM(CASE WHEN data_vencimento < CURDATE() THEN 1 ELSE 0 END), 0) AS atraso_qtd,
+                    COALESCE(SUM(CASE WHEN data_vencimento < CURDATE() THEN valor ELSE 0 END), 0) AS atraso_valor
+                FROM {$this->table}
+                WHERE usuario_id = :usuario_id AND status = 'aberta'";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([':usuario_id' => $usuarioId]);
+        $row = $stmt->fetch(PDO::FETCH_OBJ);
+
+        return (object)[
+            'aberto_qtd' => (int)($row->aberto_qtd ?? 0),
+            'aberto_valor' => (float)($row->aberto_valor ?? 0),
+            'previsto_mes_qtd' => (int)($row->previsto_mes_qtd ?? 0),
+            'previsto_mes_valor' => (float)($row->previsto_mes_valor ?? 0),
+            'atraso_qtd' => (int)($row->atraso_qtd ?? 0),
+            'atraso_valor' => (float)($row->atraso_valor ?? 0),
+        ];
+    }
+
     public function create(array $data): string|false
     {
         $sql = "INSERT INTO {$this->table}
